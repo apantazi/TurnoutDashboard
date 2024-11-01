@@ -13,6 +13,9 @@ conflict_prefer("filter", "dplyr")
 conflict_prefer("lag", "dplyr")
 conflict_prefer("flatten", "purrr")
 
+print(Sys.getenv("AWS_ACCESS_KEY_ID"))
+print(Sys.getenv("AWS_SECRET_ACCESS_KEY"))
+
 # Function to fetch and process data
 fetch_and_process_data <- function() {
   
