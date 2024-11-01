@@ -1,3 +1,4 @@
+# Load necessary libraries
 library(googlesheets4)
 library(httr)
 library(jsonlite)
@@ -5,10 +6,17 @@ library(tidyverse)
 library(scales)
 library(lubridate)
 
+# Resolve function conflicts
+if (!requireNamespace("conflicted", quietly = TRUE)) install.packages("conflicted")
+library(conflicted)
+conflict_prefer("filter", "dplyr")
+conflict_prefer("lag", "dplyr")
+conflict_prefer("flatten", "purrr")
+
 # Function to fetch and process data
 fetch_and_process_data <- function() {
   
-  log_file <- "C:/Users/Andrew/Documents/turnout_scraper_new/log.txt"
+  log_file <- "log.txt"
   log_message <- function(message) {
     write(paste(Sys.time(), message), file = log_file, append = TRUE)
   }
@@ -16,9 +24,6 @@ fetch_and_process_data <- function() {
   log_message("Script started.")
   
   county_data <- read_csv("https://raw.githubusercontent.com/apantazi/TurnoutScraper/main/data/Turnout_Scraping_Codes.csv")
-  #sheet_url <- "https://docs.google.com/spreadsheets/d/1dpaQ1PySOvKz-7hv3s9UBCu_atkD6xovwaqAb4tmQSA/edit?usp=sharing"
-  #county_data <- googlesheets4::read_sheet(sheet_url)
-  #2
   
   turnout_list <- list()
   for (i in seq_along(county_data$turnout_data_link)) {
@@ -82,11 +87,11 @@ fetch_and_process_data <- function() {
   # Combine turnout rate with the party turnout data
   final_data <- combined_party_turnout %>%
     left_join(county_turnout_rate %>%
-                select(County, TotalVotes,TurnoutRate,TotalRegisteredVoters), by = "County")
+                select(County, TotalVotes, TurnoutRate, TotalRegisteredVoters), by = "County")
   
   # Calculate statewide totals
   statewide_totals <- final_data %>%
-    summarize(across(c(DEM, REP, OTHER, Total,TotalVotes,TotalRegisteredVoters), sum)) %>%
+    summarize(across(c(DEM, REP, OTHER, Total, TotalVotes, TotalRegisteredVoters), sum)) %>%
     mutate(
       County = "Statewide",
       DEM_Percent = DEM / Total,
@@ -100,12 +105,12 @@ fetch_and_process_data <- function() {
   final_data$Last_Updated <- format(with_tz(now(), "America/New_York"), "%Y-%m-%d %H:%M:%S")
   
   # Attempt to write to CSV
-  output_file <- "C:/Users/Andrew/Documents/turnout_scraper_new/combined_party_turnout.csv"
+  output_file <- "combined_party_turnout.csv"
   tryCatch({
     write_csv(final_data, output_file)
     log_message("Successfully wrote to CSV.")
     # Upload to S3
-    system("aws s3 cp C:/Users/Andrew/Documents/turnout_scraper_new/combined_party_turnout.csv s3://data.jaxtrib.org/turnout_data/combined_party_turnout.csv")
+    system("aws s3 cp combined_party_turnout.csv s3://data.jaxtrib.org/turnout_data/combined_party_turnout.csv")
     log_message("Successfully uploaded to S3.")
   }, error = function(e) {
     log_message(paste("Error writing to CSV:", e$message))
