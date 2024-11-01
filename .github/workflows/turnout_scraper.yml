@@ -12,8 +12,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Use AWS CLI
-        run: aws --version  # Check the AWS CLI version installed by default
+      - name: Configure AWS CLI
+        run: |
+          aws configure set aws_access_key_id "${{ secrets.AWS_ACCESS_KEY_ID }}"
+          aws configure set aws_secret_access_key "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+          aws configure set region "us-east-1"  # Specify your region
+        shell: pwsh
         
       - name: Run Turnout Scraper in R
         env:
