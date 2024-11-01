@@ -10,6 +10,12 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      - name: Verify AWS CLI Installation
+        run: aws --version
+
+      - name: Check AWS Configuration
+        run: aws configure list
+  
       - name: Checkout repository
         uses: actions/checkout@v3
 
