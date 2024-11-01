@@ -10,14 +10,18 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Verify AWS CLI Installation
-        run: aws --version
-
-      - name: Check AWS Configuration
-        run: aws configure list
-  
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Install AWS CLI (if not already installed)
+        run: |
+          if not exist "C:\Program Files\Amazon\AWSCLI" (
+            echo Installing AWS CLI...
+            msiexec.exe /i https://awscli.amazonaws.com/AWSCLIV2.msi /qn
+          ) else (
+            echo AWS CLI is already installed.
+          )
+          aws --version
 
       - name: Set up R environment with required packages
         run: |
