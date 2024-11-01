@@ -1,5 +1,4 @@
 name: Turnout Scraper
-
 on:
   schedule:
     - cron: "*/5 * * * *"  # Runs every 5 minutes
@@ -14,18 +13,25 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install AWS CLI (if not already installed)
+        shell: pwsh
         run: |
-          if not exist "C:\Program Files\Amazon\AWSCLI" (
-            echo Installing AWS CLI...
-            msiexec.exe /i https://awscli.amazonaws.com/AWSCLIV2.msi /qn
-          ) else (
-            echo AWS CLI is already installed.
-          )
+          if (!(Test-Path "C:\Program Files\Amazon\AWSCLI")) {
+            Write-Output "Installing AWS CLI..."
+            Start-Process msiexec.exe -ArgumentList '/i https://awscli.amazonaws.com/AWSCLIV2.msi /qn' -Wait
+          } else {
+            Write-Output "AWS CLI is already installed."
+          }
           aws --version
 
       - name: Set up R environment with required packages
         run: |
-          Rscript -e 'packages <- c("googlesheets4", "httr", "jsonlite", "tidyverse", "scales", "lubridate", "conflicted"); new_packages <- packages[!(packages %in% installed.packages()[,"Package"])]; if(length(new_packages)) install.packages(new_packages, repos="http://cran.rstudio.com/")'
+          # Install required R packages
+          Rscript -e "if (!requireNamespace('googlesheets4', quietly = TRUE)) install.packages('googlesheets4', repos='http://cran.rstudio.com/')"
+          Rscript -e "if (!requireNamespace('httr', quietly = TRUE)) install.packages('httr', repos='http://cran.rstudio.com/')"
+          Rscript -e "if (!requireNamespace('jsonlite', quietly = TRUE)) install.packages('jsonlite', repos='http://cran.rstudio.com/')"
+          Rscript -e "if (!requireNamespace('tidyverse', quietly = TRUE)) install.packages('tidyverse', repos='http://cran.rstudio.com/')"
+          Rscript -e "if (!requireNamespace('scales', quietly = TRUE)) install.packages('scales', repos='http://cran.rstudio.com/')"
+          Rscript -e "if (!requireNamespace('lubridate', quietly = TRUE)) install.packages('lubridate', repos='http://cran.rstudio.com/')"
 
       - name: Run Turnout Scraper in R
         env:
