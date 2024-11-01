@@ -7,13 +7,23 @@ on:
 
 jobs:
   scrape_turnout:
-    runs-on: windows-latest  # Uses Windows runner since R is already installed
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Set up R environment with required packages
+        run: |
+          # Install required R packages
+          Rscript -e "if (!requireNamespace('googlesheets4', quietly = TRUE)) install.packages('googlesheets4', repos='http://cran.rstudio.com/')"
+          Rscript -e "if (!requireNamespace('httr', quietly = TRUE)) install.packages('httr', repos='http://cran.rstudio.com/')"
+          Rscript -e "if (!requireNamespace('jsonlite', quietly = TRUE)) install.packages('jsonlite', repos='http://cran.rstudio.com/')"
+          Rscript -e "if (!requireNamespace('tidyverse', quietly = TRUE)) install.packages('tidyverse', repos='http://cran.rstudio.com/')"
+          Rscript -e "if (!requireNamespace('scales', quietly = TRUE)) install.packages('scales', repos='http://cran.rstudio.com/')"
+          Rscript -e "if (!requireNamespace('lubridate', quietly = TRUE)) install.packages('lubridate', repos='http://cran.rstudio.com/')"
+      
       - name: Run Turnout Scraper in R
         run: Rscript scripts/turnout_scraper.R
         shell: cmd
-        timeout-minutes: 60  # Set timeout based on expected runtime
+        timeout-minutes: 60
