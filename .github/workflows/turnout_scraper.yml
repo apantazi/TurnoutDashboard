@@ -12,17 +12,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install AWS CLI (if not already installed)
-        shell: pwsh
-        run: |
-          if (!(Test-Path "C:\Program Files\Amazon\AWSCLI")) {
-            Write-Output "Installing AWS CLI..."
-            Start-Process msiexec.exe -ArgumentList '/i https://awscli.amazonaws.com/AWSCLIV2.msi /qn' -Wait
-          } else {
-            Write-Output "AWS CLI is already installed."
-          }
-          aws --version
-
+      - name: Use AWS CLI
+        run: aws --version  # Check the AWS CLI version installed by default
+        
       - name: Set up R environment with required packages
         run: |
           # Install required R packages
