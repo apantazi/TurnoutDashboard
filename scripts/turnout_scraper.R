@@ -1,4 +1,11 @@
 # Load necessary libraries
+if (!requireNamespace('googlesheets4', quietly = TRUE)) install.packages('googlesheets4', repos='http://cran.rstudio.com/')
+if (!requireNamespace('httr', quietly = TRUE)) install.packages('httr', repos='http://cran.rstudio.com/')
+if (!requireNamespace('jsonlite', quietly = TRUE)) install.packages('jsonlite', repos='http://cran.rstudio.com/')
+if (!requireNamespace('tidyverse', quietly = TRUE)) install.packages('tidyverse', repos='http://cran.rstudio.com/')
+if (!requireNamespace('scales', quietly = TRUE)) install.packages('scales', repos='http://cran.rstudio.com/')
+if (!requireNamespace('lubridate', quietly = TRUE)) install.packages('lubridate', repos='http://cran.rstudio.com/')
+
 library(googlesheets4)
 library(httr)
 library(jsonlite)
