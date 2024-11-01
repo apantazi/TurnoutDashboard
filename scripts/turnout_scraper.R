@@ -103,19 +103,20 @@ fetch_and_process_data <- function() {
   # Bind statewide totals to the top of the table
   final_data <- bind_rows(statewide_totals, final_data)
   final_data$Last_Updated <- format(with_tz(now(), "America/New_York"), "%Y-%m-%d %H:%M:%S")
-  
-  # Attempt to write to CSV
+
   output_file <- "combined_party_turnout.csv"
-  tryCatch({
-    write_csv(final_data, output_file)
-    log_message("Successfully wrote to CSV.")
-    # Upload to S3
-    system("aws s3 cp combined_party_turnout.csv s3://data.jaxtrib.org/turnout_data/combined_party_turnout.csv")
-    log_message("Successfully uploaded to S3.")
-  }, error = function(e) {
-    log_message(paste("Error writing to CSV:", e$message))
-  })
+tryCatch({
+  write_csv(final_data, output_file)
+  log_message("Successfully wrote to CSV.")
   
+  # Upload to S3
+  upload_status <- system("aws s3 cp combined_party_turnout.csv s3://data.jaxtrib.org/turnout_data/combined_party_turnout.csv", intern = TRUE)
+  log_message(paste("Upload status:", paste(upload_status, collapse = "\n")))
+  
+}, error = function(e) {
+  log_message(paste("Error during CSV write or S3 upload:", e$message))
+})
+    
   return(final_data)
 } 
 
