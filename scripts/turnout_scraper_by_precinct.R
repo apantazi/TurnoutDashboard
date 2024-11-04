@@ -1,8 +1,13 @@
+if (!requireNamespace('sf', quietly = TRUE)) install.packages('googlesheets4', repos='http://cran.rstudio.com/')
+if (!requireNamespace('httr', quietly = TRUE)) install.packages('httr', repos='http://cran.rstudio.com/')
+if (!requireNamespace('jsonlite', quietly = TRUE)) install.packages('jsonlite', repos='http://cran.rstudio.com/')
+if (!requireNamespace('tidyverse', quietly = TRUE)) install.packages('tidyverse', repos='http://cran.rstudio.com/')
+if (!requireNamespace('scales', quietly = TRUE)) install.packages('scales', repos='http://cran.rstudio.com/')
+
 library(httr)
 library(jsonlite)
 library(tidyverse)
 library(scales)
-library(lubridate)
 library(sf)
 log_message <- function(message) {
   log_entry <- paste(Sys.time(), "-", message)
